@@ -1,14 +1,29 @@
 class Individual {
-  constructor() {
+  constructor(type) {
     this.positionX = random(5, canvasSize - 5);
     this.positionY = random(5, canvasSize - 5);
     this.directionX = random(-5, 5);
     this.directionY = random(-5, 5);
     this.d = 10;
-    this.isExp = false;
-    this.isInf = false;
-    this.isRec = false;
-    this.isDea = false;
+    this.type = type;
+
+    this.expEndTime;
+    this.infEndTime;
+    this.infPass = false;
+
+    if (this.type == "sus") {
+      this.isExp = false;
+      this.isInf = false;
+      this.isRec = false;
+      this.isDea = false;
+    } else if (this.type == "exp") {
+      this.isExp = true;
+      this.isInf = false;
+      this.isRec = false;
+      this.isDea = false;
+
+      this.expEndTime = initialExpTime;
+    }
   }
 
   draw() {
