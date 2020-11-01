@@ -1,3 +1,5 @@
+let simulType = 2;
+
 let sus = [];
 let exp = [];
 let inf = [];
@@ -43,6 +45,8 @@ function setup() {
 
 function draw() {
   background("grey");
+
+  setUpSimul(simulType);
 
   for (let i = 0; i < sus.length; i++) {
     sus[i].move();
@@ -106,6 +110,17 @@ function draw() {
     append(infAkk, inf.length);
     append(recAkk, rec.length);
     append(deaAkk, dea.length);
+  }
+}
+
+function setUpSimul(type) {
+  if (type == 2) {
+    strokeWeight(3);
+    line(200, 200, 300, 200);
+    line(300, 200, 300, 300);
+    line(200, 200, 200, 300);
+    line(200, 300, 300, 300);
+    strokeWeight(1);
   }
 }
 
