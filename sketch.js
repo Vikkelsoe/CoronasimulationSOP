@@ -1,4 +1,5 @@
-let simulType = 2;
+let simulType = 0;
+let simulStart = 0;
 
 let sus = [];
 let exp = [];
@@ -32,22 +33,57 @@ let deaProb = 0.5;
 let initialExpTime = 100;
 let infExpTime = 300;
 
-let button;
+let input1;
+let button1;
+let button2;
 
 function setup() {
   createCanvas(canvasSize, canvasSize);
-  button = createButton("Print data");
-  button.position(10, 10);
-  button.mousePressed(printData);
 
-  patientZero();
+  input1 = createInput();
+  input1.position(150, 200);
+
+  button1 = createButton("Begynd");
+  button1.position(200, 250);
+  button1.mousePressed(beginSimulation);
 }
 
 function draw() {
   background("grey");
+  if (frameCount % 5 == 0) {
+  }
 
-  setUpSimul(simulType);
+  if (simulType == 2) {
+    setUpSimul(2);
+  }
 
+  if (simulType != 0) {
+    moveAndDraw();
+  } else {
+    fill("white");
+    textSize(20);
+    text("Indtast hvilken simulationstype, du ønsker at køre", 30, 150);
+    textSize(15);
+    text("(1 el. 2)", 200, 175);
+  }
+}
+
+function beginSimulation() {
+  if (int(input1.value()) == 1 || int(input1.value()) == 2) {
+    simulType = int(input1.value());
+    simulStart = frameCount;
+    button1.hide();
+    input1.hide();
+    patientZero();
+    button2 = createButton("Print data");
+    button2.position(10, 10);
+    button2.mousePressed(printData);
+  } else {
+    alert("Skriv 1 eller 2 i inputfeltet");
+  }
+}
+
+function moveAndDraw() {
   for (let i = 0; i < sus.length; i++) {
     sus[i].move();
     sus[i].draw();
@@ -103,8 +139,8 @@ function draw() {
     dea[i].draw();
   }
 
-  if (frameCount % 10 == 0) {
-    append(tAkk, frameCount);
+  if ((frameCount - simulStart) % 10 == 0) {
+    append(tAkk, frameCount - simulStart);
     append(susAkk, sus.length);
     append(expAkk, exp.length);
     append(infAkk, inf.length);

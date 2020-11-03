@@ -24,7 +24,7 @@ class Individual {
       this.isRec = false;
       this.isDea = false;
 
-      this.expEndTime = initialExpTime;
+      this.expEndTime = simulStart + initialExpTime;
     }
   }
 
