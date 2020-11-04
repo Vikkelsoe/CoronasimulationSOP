@@ -1,3 +1,13 @@
+/*Simulationstyper:
+1 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas
+2 - Alle cirkler bevæger sig frem og tilbage mellem to faste punkter. Et omkring centrum i canvas og et uden for centrum
+(igang) 3 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+(ikke lavet) 4 - Alle cirkler er placeret i en af fire kasser. 1/8 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+
+LAV move3()!!!
+
+*/
+
 let simulType = 0;
 let simulStart = 0;
 
@@ -57,6 +67,10 @@ function draw() {
     setUpSimul(2);
   }
 
+  if (simulType == 3) {
+    setUpSimul(3);
+  }
+
   if (simulType != 0) {
     moveAndDraw();
   } else {
@@ -64,12 +78,16 @@ function draw() {
     textSize(20);
     text("Indtast hvilken simulationstype, du ønsker at køre", 30, 150);
     textSize(15);
-    text("(1 el. 2)", 200, 175);
+    text("(1, 2 el. 3)", 200, 175);
   }
 }
 
 function beginSimulation() {
-  if (int(input1.value()) == 1 || int(input1.value()) == 2) {
+  if (
+    int(input1.value()) == 1 ||
+    int(input1.value()) == 2 ||
+    int(input1.value()) == 3
+  ) {
     simulType = int(input1.value());
     simulStart = frameCount;
     button1.hide();
@@ -79,7 +97,7 @@ function beginSimulation() {
     button2.position(10, 10);
     button2.mousePressed(printData);
   } else {
-    alert("Skriv 1 eller 2 i inputfeltet");
+    alert("Skriv 1, 2 eller 3 i inputfeltet");
   }
 }
 
@@ -156,6 +174,32 @@ function setUpSimul(type) {
     line(300, 200, 300, 300);
     line(200, 200, 200, 300);
     line(200, 300, 300, 300);
+    strokeWeight(1);
+  }
+
+  if (type == 3) {
+    strokeWeight(3);
+
+    line(25, 25, 225, 25);
+    line(225, 25, 225, 225);
+    line(25, 25, 25, 225);
+    line(25, 225, 225, 225);
+
+    line(275, 25, 475, 25);
+    line(475, 25, 475, 225);
+    line(275, 25, 275, 225);
+    line(275, 225, 475, 225);
+
+    line(25, 275, 225, 275);
+    line(225, 275, 225, 475);
+    line(25, 275, 25, 475);
+    line(25, 475, 225, 475);
+
+    line(275, 275, 475, 275);
+    line(475, 275, 475, 475);
+    line(275, 275, 275, 475);
+    line(275, 475, 475, 475);
+
     strokeWeight(1);
   }
 }

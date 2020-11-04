@@ -4,6 +4,8 @@ class Individual {
       this.constructDirPos1();
     } else if (simulType == 2) {
       this.constructDirPos2();
+    } else if (simulType == 3) {
+      this.constructDirPos3();
     }
 
     this.d = 10;
@@ -49,7 +51,10 @@ class Individual {
       this.move1();
     } else if (simulType == 2) {
       this.move2();
+    } else if (simulType == 3) {
+      this.move3();
     }
+
     this.positionX = this.positionX + this.directionX;
     this.positionY = this.positionY + this.directionY;
   }
@@ -66,7 +71,7 @@ class Individual {
 
     if (this.positionX >= 190 && this.positionX <= 310) {
       randomNum = random();
-      if (randomNum >= 0.5) {
+      if (randomNum <= 0.5) {
         this.positionY = random(5, 190);
       } else {
         this.positionY = random(310, canvasSize - 5);
@@ -98,6 +103,81 @@ class Individual {
       ((this.destinationX - this.StartX) ** 2 +
         (this.destinationY - this.StartY) ** 2) **
       0.5;
+  }
+
+  constructDirPos3() {
+    this.homeBox = int(random(1, 5));
+
+    switch (this.homeBox) {
+      case 1:
+        this.positionX = random(30, 220);
+        this.positionY = random(30, 220);
+        break;
+      case 2:
+        this.positionX = random(280, 470);
+        this.positionY = random(30, 220);
+        break;
+      case 3:
+        this.positionX = random(30, 220);
+        this.positionY = random(280, 470);
+        break;
+      case 4:
+        this.positionX = random(280, 470);
+        this.positionY = random(280, 470);
+    }
+
+    randomNum = random();
+    if (randomNum <= 0.5) {
+      this.traveller = true;
+    } else {
+      this.traveller = false;
+    }
+
+    if (this.traveller) {
+      this.destinationBox = int(random(1, 5));
+
+      switch (this.destinationBox) {
+        case 1:
+          this.destinationX = random(30, 220);
+          this.destinationY = random(30, 220);
+          break;
+        case 2:
+          this.destinationX = random(280, 470);
+          this.destinationY = random(30, 220);
+          break;
+        case 3:
+          this.destinationX = random(30, 220);
+          this.destinationY = random(280, 470);
+          break;
+        case 4:
+          this.destinationX = random(280, 470);
+          this.destinationY = random(280, 470);
+      }
+
+      this.randomMultiplier = random(0.01, 0.02);
+      this.directionX =
+        (this.destinationX - this.positionX) * this.randomMultiplier;
+      this.directionY =
+        (this.destinationY - this.positionY) * this.randomMultiplier;
+
+      this.StartX = this.positionX;
+      this.StartY = this.positionY;
+
+      this.headingIn = true;
+
+      this.distanceToLastGoal =
+        ((this.StartX - this.positionX) ** 2 +
+          (this.StartY - this.positionY) ** 2) **
+        0.5;
+
+      this.travelDistance =
+        ((this.destinationX - this.StartX) ** 2 +
+          (this.destinationY - this.StartY) ** 2) **
+        0.5;
+    } else {
+      this.directionX = random(-5, 5);
+      this.directionY = random(-5, 5);
+    }
   }
 
   move1() {
@@ -135,4 +215,6 @@ class Individual {
       this.headingIn = !this.headingIn;
     }
   }
+
+  move3() {}
 }
