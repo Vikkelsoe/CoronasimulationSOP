@@ -4,8 +4,8 @@ class Individual {
       this.constructDirPos1();
     } else if (simulType == 2) {
       this.constructDirPos2();
-    } else if (simulType == 3) {
-      this.constructDirPos3();
+    } else if (simulType == 3 || simulType == 4 || simulType == 5) {
+      this.constructDirPos345();
     }
 
     this.d = 10;
@@ -51,8 +51,8 @@ class Individual {
       this.move1();
     } else if (simulType == 2) {
       this.move2();
-    } else if (simulType == 3) {
-      this.move3();
+    } else if (simulType == 3 || simulType == 4 || simulType == 5) {
+      this.move345();
     }
 
     this.positionX = this.positionX + this.directionX;
@@ -105,7 +105,7 @@ class Individual {
       0.5;
   }
 
-  constructDirPos3() {
+  constructDirPos345() {
     this.homeBox = int(random(1, 5));
 
     switch (this.homeBox) {
@@ -127,10 +127,25 @@ class Individual {
     }
 
     randomNum = random();
-    if (randomNum <= 0.5) {
-      this.traveller = true;
-    } else {
-      this.traveller = false;
+    switch (simulType) {
+      case 3:
+        if (randomNum <= 0.5) {
+          this.traveller = true;
+        } else {
+          this.traveller = false;
+        }
+        break;
+
+      case 4:
+        if (randomNum <= 0.125) {
+          this.traveller = true;
+        } else {
+          this.traveller = false;
+        }
+        break;
+
+      case 5:
+        this.traveller = false;
     }
 
     if (this.traveller) {
@@ -163,7 +178,7 @@ class Individual {
       this.StartX = this.positionX;
       this.StartY = this.positionY;
 
-      this.headingIn = true;
+      this.headingOut = true;
 
       this.distanceToLastGoal =
         ((this.StartX - this.positionX) ** 2 +
@@ -216,5 +231,112 @@ class Individual {
     }
   }
 
-  move3() {}
+  move345() {
+    if (this.traveller) {
+      if (this.headingOut) {
+        this.distanceToLastGoal =
+          ((this.StartX - this.positionX) ** 2 +
+            (this.StartY - this.positionY) ** 2) **
+          0.5;
+        if (this.distanceToLastGoal >= this.travelDistance) {
+          this.directionX = -this.directionX;
+          this.directionY = -this.directionY;
+          this.headingOut = !this.headingOut;
+        }
+      } else {
+        this.distanceToLastGoal =
+          ((this.destinationX - this.positionX) ** 2 +
+            (this.destinationY - this.positionY) ** 2) **
+          0.5;
+        if (this.distanceToLastGoal >= this.travelDistance) {
+          this.destinationBox = int(random(1, 5));
+
+          switch (this.destinationBox) {
+            case 1:
+              this.destinationX = random(30, 220);
+              this.destinationY = random(30, 220);
+              break;
+            case 2:
+              this.destinationX = random(280, 470);
+              this.destinationY = random(30, 220);
+              break;
+            case 3:
+              this.destinationX = random(30, 220);
+              this.destinationY = random(280, 470);
+              break;
+            case 4:
+              this.destinationX = random(280, 470);
+              this.destinationY = random(280, 470);
+          }
+          this.travelDistance =
+            ((this.destinationX - this.StartX) ** 2 +
+              (this.destinationY - this.StartY) ** 2) **
+            0.5;
+          this.directionX =
+            (this.destinationX - this.positionX) * this.randomMultiplier;
+          this.directionY =
+            (this.destinationY - this.positionY) * this.randomMultiplier;
+          this.headingOut = !this.headingOut;
+        }
+      }
+    } else {
+      switch (this.homeBox) {
+        case 1:
+          if (
+            this.positionX + this.d / 2 >= 225 ||
+            this.positionX - this.d / 2 <= 25
+          ) {
+            this.directionX = -this.directionX;
+          }
+          if (
+            this.positionY + this.d / 2 >= 225 ||
+            this.positionY - this.d / 2 <= 25
+          ) {
+            this.directionY = -this.directionY;
+          }
+          break;
+        case 2:
+          if (
+            this.positionX + this.d / 2 >= 475 ||
+            this.positionX - this.d / 2 <= 275
+          ) {
+            this.directionX = -this.directionX;
+          }
+          if (
+            this.positionY + this.d / 2 >= 225 ||
+            this.positionY - this.d / 2 <= 25
+          ) {
+            this.directionY = -this.directionY;
+          }
+          break;
+        case 3:
+          if (
+            this.positionX + this.d / 2 >= 225 ||
+            this.positionX - this.d / 2 <= 25
+          ) {
+            this.directionX = -this.directionX;
+          }
+          if (
+            this.positionY + this.d / 2 >= 475 ||
+            this.positionY - this.d / 2 <= 275
+          ) {
+            this.directionY = -this.directionY;
+          }
+          break;
+        case 4:
+          if (
+            this.positionX + this.d / 2 >= 475 ||
+            this.positionX - this.d / 2 <= 275
+          ) {
+            this.directionX = -this.directionX;
+          }
+          if (
+            this.positionY + this.d / 2 >= 475 ||
+            this.positionY - this.d / 2 <= 275
+          ) {
+            this.directionY = -this.directionY;
+          }
+      }
+    }
+  }
 }

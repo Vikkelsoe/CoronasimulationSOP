@@ -1,57 +1,65 @@
 /*Simulationstyper:
 1 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas
 2 - Alle cirkler bevæger sig frem og tilbage mellem to faste punkter. Et omkring centrum i canvas og et uden for centrum
-(igang) 3 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
-(ikke lavet) 4 - Alle cirkler er placeret i en af fire kasser. 1/8 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+3 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+4 - Alle cirkler er placeret i en af fire kasser. 1/8 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+5 - Alle cirkler er placeret i en af fire kasser. Alle bliver hjemme i deres egen kasse.
+(ikke lavet) 6 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
+(ikke lavet) 7 - Cirklerne holder "afstand" (på en eller anden måde)
 
-LAV move3()!!!
+Ryk rundt på 6,7 og 3,4,5
+Lav særlig printordninger for 3, så man kan printe data fra hver kasse
+Eksperimenter m. tider og måske smitte, så kurverne bliver pænere
+
 
 */
 
 let simulType = 0;
 let simulStart = 0;
 
-let sus = [];
-let exp = [];
-let inf = [];
-let rec = [];
-let dea = [];
+let sus = [],
+  exp = [],
+  inf = [],
+  rec = [],
+  dea = [];
 
-let tAkk = [];
-let susAkk = [];
-let expAkk = [];
-let infAkk = [];
-let recAkk = [];
-let deaAkk = [];
+let tAkk = [],
+  susAkk = [],
+  expAkk = [],
+  infAkk = [],
+  recAkk = [],
+  deaAkk = [];
 
-let tData = "t: ";
-let susData = "sus: ";
-let expData = "exp: ";
-let infData = "inf: ";
-let recData = "rec: ";
-let deaData = "dea: ";
+let tData = "t: ",
+  susData = "sus: ",
+  expData = "exp: ",
+  infData = "inf: ",
+  recData = "rec: ",
+  deaData = "dea: ";
 
 let populationSize = 500;
 let canvasSize = 500;
 
 let randomNum;
 let riskRadius = 10;
-let expProb = 0.01;
-let infProb = 0.5;
-let deaProb = 0.5;
+let expProb = 0.01,
+  infProb = 0.5,
+  deaProb = 0.5;
 
 let initialExpTime = 100;
 let infExpTime = 300;
 
-let input1;
-let button1;
-let button2;
+let radioInput, button1, button2;
 
 function setup() {
   createCanvas(canvasSize, canvasSize);
 
-  input1 = createInput();
-  input1.position(150, 200);
+  radioInput = createRadio();
+  radioInput.option(1, "Stor region");
+  radioInput.option(2, "Stor region m. mødecentrum");
+  radioInput.option(3, "4 regioner m. rejse-rate på 1/2");
+  radioInput.option(4, "4 regioner m. rejse-rate på 1/8");
+  radioInput.option(5, "4 regioner uden rejse");
 
   button1 = createButton("Begynd");
   button1.position(200, 250);
@@ -67,7 +75,7 @@ function draw() {
     setUpSimul(2);
   }
 
-  if (simulType == 3) {
+  if (simulType == 3 || simulType == 4 || simulType == 5) {
     setUpSimul(3);
   }
 
@@ -75,29 +83,22 @@ function draw() {
     moveAndDraw();
   } else {
     fill("white");
-    textSize(20);
-    text("Indtast hvilken simulationstype, du ønsker at køre", 30, 150);
-    textSize(15);
-    text("(1, 2 el. 3)", 200, 175);
+    textSize(19);
+    text("Vælg herunder hvilken simulationstype, du ønsker at køre", 10, 225);
   }
 }
 
 function beginSimulation() {
-  if (
-    int(input1.value()) == 1 ||
-    int(input1.value()) == 2 ||
-    int(input1.value()) == 3
-  ) {
-    simulType = int(input1.value());
+  if (radioInput.value()) {
+    simulType = int(radioInput.value());
     simulStart = frameCount;
     button1.hide();
-    input1.hide();
     patientZero();
     button2 = createButton("Print data");
     button2.position(10, 10);
     button2.mousePressed(printData);
   } else {
-    alert("Skriv 1, 2 eller 3 i inputfeltet");
+    alert("Vælg en simulation på knapperne under det grå vindue.");
   }
 }
 
@@ -177,7 +178,7 @@ function setUpSimul(type) {
     strokeWeight(1);
   }
 
-  if (type == 3) {
+  if (type == 3 || type == 4 || type == 5) {
     strokeWeight(3);
 
     line(25, 25, 225, 25);
