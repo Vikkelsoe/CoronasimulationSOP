@@ -8,9 +8,9 @@
 (ikke lavet) 7 - Cirklerne holder "afstand" (på en eller anden måde)
 
 Ryk rundt på 6,7 og 3,4,5
-Lav særlig printordninger for 3, så man kan printe data fra hver kasse
+Ret op på de mange region-printlister. Måske kan der laves fire lister i en liste?
 Eksperimenter m. tider og måske smitte, så kurverne bliver pænere
-
+Organiser funktioner, så de deles ud i andre filer
 
 */
 
@@ -23,19 +23,39 @@ let sus = [],
   rec = [],
   dea = [];
 
-let tAkk = [],
-  susAkk = [],
-  expAkk = [],
-  infAkk = [],
-  recAkk = [],
-  deaAkk = [];
+let tCount = [],
+  susCount = [],
+  expCount = [],
+  infCount = [],
+  recCount = [],
+  deaCount = [];
 
-let tData = "t: ",
-  susData = "sus: ",
-  expData = "exp: ",
-  infData = "inf: ",
-  recData = "rec: ",
-  deaData = "dea: ";
+let susCount1 = [],
+  susCount2 = [],
+  susCount3 = [],
+  susCount4 = [],
+  expCount1 = [],
+  expCount2 = [],
+  expCount3 = [],
+  expCount4 = [],
+  infCount1 = [],
+  infCount2 = [],
+  infCount3 = [],
+  infCount4 = [],
+  recCount1 = [],
+  recCount2 = [],
+  recCount3 = [],
+  recCount4 = [],
+  deaCount1 = [],
+  deaCount2 = [],
+  deaCount3 = [],
+  deaCount4 = [],
+  counter1,
+  counter2,
+  counter3,
+  counter4;
+
+let dataPrint;
 
 let populationSize = 500;
 let canvasSize = 500;
@@ -96,7 +116,7 @@ function beginSimulation() {
     patientZero();
     button2 = createButton("Print data");
     button2.position(10, 10);
-    button2.mousePressed(printData);
+    button2.mousePressed(printAllData);
   } else {
     alert("Vælg en simulation på knapperne under det grå vindue.");
   }
@@ -158,14 +178,7 @@ function moveAndDraw() {
     dea[i].draw();
   }
 
-  if ((frameCount - simulStart) % 10 == 0) {
-    append(tAkk, frameCount - simulStart);
-    append(susAkk, sus.length);
-    append(expAkk, exp.length);
-    append(infAkk, inf.length);
-    append(recAkk, rec.length);
-    append(deaAkk, dea.length);
-  }
+  logData();
 }
 
 function setUpSimul(type) {
@@ -269,30 +282,88 @@ function destiny(currentInf) {
   }
 }
 
-function printData() {
-  for (let i = 0; i < tAkk.length; i++) {
-    tData += tAkk[i] + ",";
+function logData() {
+  if ((frameCount - simulStart) % 10 == 0) {
+    append(tCount, frameCount - simulStart);
+    if (simulType == 3 || simulType == 4 || simulType == 5) {
+      logDataByRegion(sus, susCount1, susCount2, susCount3, susCount4);
+      logDataByRegion(exp, expCount1, expCount2, expCount3, expCount4);
+      logDataByRegion(inf, infCount1, infCount2, infCount3, infCount4);
+      logDataByRegion(rec, recCount1, recCount2, recCount3, recCount4);
+      logDataByRegion(dea, deaCount1, deaCount2, deaCount3, deaCount4);
+    } else {
+      append(susCount, sus.length);
+      append(expCount, exp.length);
+      append(infCount, inf.length);
+      append(recCount, rec.length);
+      append(deaCount, dea.length);
+    }
   }
-  for (let i = 0; i < susAkk.length; i++) {
-    susData += susAkk[i] + ",";
-  }
-  for (let i = 0; i < expAkk.length; i++) {
-    expData += expAkk[i] + ",";
-  }
-  for (let i = 0; i < infAkk.length; i++) {
-    infData += infAkk[i] + ",";
-  }
-  for (let i = 0; i < recAkk.length; i++) {
-    recData += recAkk[i] + ",";
-  }
-  for (let i = 0; i < deaAkk.length; i++) {
-    deaData += deaAkk[i] + ",";
-  }
+}
 
-  console.log(tData);
-  console.log(susData);
-  console.log(expData);
-  console.log(infData);
-  console.log(recData);
-  console.log(deaData);
+function logDataByRegion(dataSource, logList1, logList2, logList3, logList4) {
+  counter1 = 0;
+  counter2 = 0;
+  counter3 = 0;
+  counter4 = 0;
+  for (let i = 0; i < dataSource.length; i++) {
+    switch (dataSource[i].homeBox) {
+      case 1:
+        counter1++;
+        break;
+      case 2:
+        counter2++;
+        break;
+      case 3:
+        counter3++;
+        break;
+      case 4:
+        counter4++;
+    }
+  }
+  append(logList1, counter1);
+  append(logList2, counter2);
+  append(logList3, counter3);
+  append(logList4, counter4);
+}
+
+function printAllData() {
+  singleDataPrint(tCount, "t");
+  if (simulType == 3 || simulType == 4 || simulType == 5) {
+    singleDataPrint(susCount1, "sus1");
+    singleDataPrint(susCount2, "sus2");
+    singleDataPrint(susCount3, "sus3");
+    singleDataPrint(susCount4, "sus4");
+    singleDataPrint(expCount1, "exp1");
+    singleDataPrint(expCount2, "exp2");
+    singleDataPrint(expCount3, "exp3");
+    singleDataPrint(expCount4, "exp4");
+    singleDataPrint(infCount1, "inf1");
+    singleDataPrint(infCount2, "inf2");
+    singleDataPrint(infCount3, "inf3");
+    singleDataPrint(infCount4, "inf4");
+    singleDataPrint(recCount1, "rec1");
+    singleDataPrint(recCount2, "rec2");
+    singleDataPrint(recCount3, "rec3");
+    singleDataPrint(recCount4, "rec4");
+    singleDataPrint(deaCount1, "dea1");
+    singleDataPrint(deaCount2, "dea2");
+    singleDataPrint(deaCount3, "dea3");
+    singleDataPrint(deaCount4, "dea4");
+  } else {
+    singleDataPrint(susCount, "sus");
+    singleDataPrint(expCount, "exp");
+    singleDataPrint(infCount, "inf");
+    singleDataPrint(recCount, "rec");
+    singleDataPrint(deaCount, "dea");
+  }
+}
+
+function singleDataPrint(data, headline) {
+  dataPrint = headline + ": ";
+  for (let i = 0; i < data.length; i++) {
+    dataPrint += data[i] + ",";
+  }
+  dataPrint = dataPrint.slice(0, -1);
+  console.log(dataPrint);
 }
