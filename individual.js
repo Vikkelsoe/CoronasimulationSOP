@@ -6,6 +6,8 @@ class Individual {
       this.constructDirPos2();
     } else if (simulType == 3 || simulType == 4 || simulType == 5) {
       this.constructDirPos345();
+    } else if (simulType == 6) {
+      this.constructDirPos6();
     }
 
     this.d = 10;
@@ -53,6 +55,8 @@ class Individual {
       this.move2();
     } else if (simulType == 3 || simulType == 4 || simulType == 5) {
       this.move345();
+    } else if (simulType == 6) {
+      this.move6();
     }
 
     this.positionX = this.positionX + this.directionX;
@@ -193,6 +197,20 @@ class Individual {
       this.directionX = random(-5, 5);
       this.directionY = random(-5, 5);
     }
+  }
+
+  constructDirPos6() {
+    this.positionY = random(5, canvasSize - 5);
+    if (this.positionY > 450) {
+      this.positionX = random(5, canvasSize - 55);
+    } else {
+      this.positionX = random(5, canvasSize - 5);
+    }
+
+    this.directionX = random(-5, 5);
+    this.directionY = random(-5, 5);
+
+    this.inQuarantine = false;
   }
 
   move1() {
@@ -336,6 +354,40 @@ class Individual {
           ) {
             this.directionY = -this.directionY;
           }
+      }
+    }
+  }
+
+  move6() {
+    if (this.isInf == true && this.inQuarantine == false) {
+      this.inQuarantine = true;
+      this.positionX = random(455, 495);
+      this.positionY = random(455, 495);
+      this.directionX = 0;
+      this.directionY = 0;
+    } else if (this.isInf == false && this.inQuarantine == true) {
+      this.inQuarantine = false;
+      this.directionX = random(-5, 5);
+      this.directionY = random(-5, 5);
+    } else if (this.inQuarantine == false) {
+      if (
+        this.positionX - this.d / 2 <= 0 ||
+        this.positionX + this.d / 2 >= canvasSize ||
+        (this.positionX + this.d / 2 >= 450 &&
+          this.positionY + this.d / 2 >= 450 &&
+          this.positionX + this.d / 2 - this.directionX < 450)
+      ) {
+        this.directionX = -this.directionX;
+      }
+
+      if (
+        this.positionY - this.d / 2 <= 0 ||
+        this.positionY + this.d / 2 >= canvasSize ||
+        (this.positionX + this.d / 2 >= 450 &&
+          this.positionY + this.d / 2 >= 450 &&
+          this.positionY + this.d / 2 - this.directionY < 450)
+      ) {
+        this.directionY = -this.directionY;
       }
     }
   }

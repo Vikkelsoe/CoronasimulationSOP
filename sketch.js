@@ -10,6 +10,7 @@
 Ryk rundt på 6,7 og 3,4,5
 Ret op på de mange region-printlister. Måske kan der laves fire lister i en liste?
 Eksperimenter m. tider og måske smitte, så kurverne bliver pænere
+Få cirklerne til at bevæge sig langsommere
 Organiser funktioner, så de deles ud i andre filer
 
 */
@@ -80,6 +81,7 @@ function setup() {
   radioInput.option(3, "4 regioner m. rejse-rate på 1/2");
   radioInput.option(4, "4 regioner m. rejse-rate på 1/8");
   radioInput.option(5, "4 regioner uden rejse");
+  radioInput.option(6, "Stor region m. karantæneafsnit");
 
   button1 = createButton("Begynd");
   button1.position(200, 250);
@@ -88,18 +90,9 @@ function setup() {
 
 function draw() {
   background("grey");
-  if (frameCount % 5 == 0) {
-  }
-
-  if (simulType == 2) {
-    setUpSimul(2);
-  }
-
-  if (simulType == 3 || simulType == 4 || simulType == 5) {
-    setUpSimul(3);
-  }
 
   if (simulType != 0) {
+    setUpSimul(simulType);
     moveAndDraw();
   } else {
     fill("white");
@@ -214,6 +207,15 @@ function setUpSimul(type) {
     line(275, 275, 275, 475);
     line(275, 475, 475, 475);
 
+    strokeWeight(1);
+  }
+
+  if (type == 6) {
+    strokeWeight(3);
+    line(450, 450, 499, 450);
+    line(450, 450, 450, 499);
+    line(499, 450, 499, 499);
+    line(450, 499, 499, 499);
     strokeWeight(1);
   }
 }
