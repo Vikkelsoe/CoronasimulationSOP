@@ -8,6 +8,8 @@ class Individual {
       this.constructDirPos345();
     } else if (simulType == 6) {
       this.constructDirPos6();
+    } else if (simulType == 7) {
+      this.constructDirPos7(type);
     }
 
     this.d = 10;
@@ -57,6 +59,8 @@ class Individual {
       this.move345();
     } else if (simulType == 6) {
       this.move6();
+    } else if (simulType == 7) {
+      this.move7();
     }
 
     this.positionX = this.positionX + this.directionX;
@@ -211,6 +215,18 @@ class Individual {
     this.directionY = random(-5, 5);
 
     this.inQuarantine = false;
+  }
+
+  constructDirPos7(type) {
+    if (type == "exp") {
+      this.positionX = 250;
+      this.positionY = 250;
+    } else {
+      this.positionX = ((spawnCounter * 21) % 500) + 5;
+      this.positionY = floor(spawnCounter / 23) * 23 + 5;
+    }
+    this.directionX = random(-5, 5);
+    this.directionY = random(-5, 5);
   }
 
   move1() {
@@ -388,6 +404,51 @@ class Individual {
           this.positionY + this.d / 2 - this.directionY < 450)
       ) {
         this.directionY = -this.directionY;
+      }
+    }
+  }
+
+  move7() {
+    if (
+      this.socialDistancing(sus) ||
+      this.socialDistancing(exp) ||
+      this.socialDistancing(inf) ||
+      this.socialDistancing(rec)
+    ) {
+      //this.positionX = this.positionX - this.directionX;
+      //this.positionY = this.positionY - this.directionY;
+      this.directionX = -this.directionX;
+      this.directionY = -this.directionY;
+    }
+
+    if (
+      this.positionX - this.d / 2 <= 0 ||
+      this.positionX + this.d / 2 >= canvasSize
+    ) {
+      this.directionX = -this.directionX;
+    }
+
+    if (
+      this.positionY - this.d / 2 <= 0 ||
+      this.positionY + this.d / 2 >= canvasSize
+    ) {
+      this.directionY = -this.directionY;
+    }
+  }
+
+  socialDistancing(list) {
+    for (let i = 0; i < list.length; i++) {
+      if (
+        ((this.positionX - list[i].positionX) ** 2 +
+          (this.positionY - list[i].positionY) ** 2) **
+          0.5 <=
+          this.d &&
+        ((this.positionX - list[i].positionX) ** 2 +
+          (this.positionY - list[i].positionY) ** 2) **
+          0.5 !=
+          0
+      ) {
+        return true;
       }
     }
   }

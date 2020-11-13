@@ -4,19 +4,21 @@
 3 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
 4 - Alle cirkler er placeret i en af fire kasser. 1/8 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
 5 - Alle cirkler er placeret i en af fire kasser. Alle bliver hjemme i deres egen kasse.
-(ikke lavet) 6 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
-(ikke lavet) 7 - Cirklerne holder "afstand" (på en eller anden måde)
+6 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
+7 - Cirklerne holder "afstand" ved at blive frastødt hinanden
 
-Ryk rundt på 6,7 og 3,4,5
-Ret op på de mange region-printlister. Måske kan der laves fire lister i en liste?
-Eksperimenter m. tider og måske smitte, så kurverne bliver pænere
+Ryk rundt på rækkefølgen, så det bliver 1,7,6,2,3,4,5
 Få cirklerne til at bevæge sig langsommere
+Eksperimenter m. tider og sandsynligheder, så kurverne bliver pænere
 Organiser funktioner, så de deles ud i andre filer
+Ret op på de mange region-printlister. Måske kan der laves fire lister i en liste?
 
 */
 
 let simulType = 0;
 let simulStart = 0;
+
+let spawnCounter = 0; //anvendes ved spawn (patientZero-funktionen) i social distancering
 
 let sus = [],
   exp = [],
@@ -62,8 +64,8 @@ let populationSize = 500;
 let canvasSize = 500;
 
 let randomNum;
-let riskRadius = 10;
-let expProb = 0.01,
+let riskRadius = 15;
+let expProb = 0.0075,
   infProb = 0.5,
   deaProb = 0.5;
 
@@ -73,15 +75,17 @@ let infExpTime = 300;
 let radioInput, button1, button2;
 
 function setup() {
+  console.log(random());
   createCanvas(canvasSize, canvasSize);
 
   radioInput = createRadio();
   radioInput.option(1, "Stor region");
   radioInput.option(2, "Stor region m. mødecentrum");
-  radioInput.option(3, "4 regioner m. rejse-rate på 1/2");
-  radioInput.option(4, "4 regioner m. rejse-rate på 1/8");
+  radioInput.option(3, "4 regioner m. 1/2 rejse");
+  radioInput.option(4, "4 regioner m. 1/8 rejse");
   radioInput.option(5, "4 regioner uden rejse");
   radioInput.option(6, "Stor region m. karantæneafsnit");
+  radioInput.option(7, "Stor region m. social distancering");
 
   button1 = createButton("Begynd");
   button1.position(200, 250);
@@ -223,6 +227,7 @@ function setUpSimul(type) {
 function patientZero() {
   for (let i = 0; i < populationSize - 1; i++) {
     append(sus, new Individual("sus"));
+    spawnCounter += 1; //anvendes kun til spawn ved social distancering
   }
   append(exp, new Individual("exp"));
 }
