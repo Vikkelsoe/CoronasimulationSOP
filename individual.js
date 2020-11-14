@@ -3,13 +3,13 @@ class Individual {
     if (simulType == 1) {
       this.constructDirPos1();
     } else if (simulType == 2) {
-      this.constructDirPos2();
-    } else if (simulType == 3 || simulType == 4 || simulType == 5) {
-      this.constructDirPos345();
-    } else if (simulType == 6) {
-      this.constructDirPos6();
-    } else if (simulType == 7) {
-      this.constructDirPos7(type);
+      this.constructDirPos2(type);
+    } else if (simulType == 3) {
+      this.constructDirPos3();
+    } else if (simulType == 4) {
+      this.constructDirPos4();
+    } else if (simulType == 5 || simulType == 6 || simulType == 7) {
+      this.constructDirPos567();
     }
 
     this.d = 10;
@@ -55,12 +55,12 @@ class Individual {
       this.move1();
     } else if (simulType == 2) {
       this.move2();
-    } else if (simulType == 3 || simulType == 4 || simulType == 5) {
-      this.move345();
-    } else if (simulType == 6) {
-      this.move6();
-    } else if (simulType == 7) {
-      this.move7();
+    } else if (simulType == 3) {
+      this.move3();
+    } else if (simulType == 4) {
+      this.move4();
+    } else if (simulType == 5 || simulType == 6 || simulType == 7) {
+      this.move567();
     }
 
     this.positionX = this.positionX + this.directionX;
@@ -74,7 +74,33 @@ class Individual {
     this.directionY = random(-5, 5);
   }
 
-  constructDirPos2() {
+  constructDirPos2(type) {
+    if (type == "exp") {
+      this.positionX = 250;
+      this.positionY = 250;
+    } else {
+      this.positionX = ((spawnCounter * 21) % 500) + 5;
+      this.positionY = floor(spawnCounter / 23) * 23 + 5;
+    }
+    this.directionX = random(-5, 5);
+    this.directionY = random(-5, 5);
+  }
+
+  constructDirPos3() {
+    this.positionY = random(5, canvasSize - 5);
+    if (this.positionY > 450) {
+      this.positionX = random(5, canvasSize - 55);
+    } else {
+      this.positionX = random(5, canvasSize - 5);
+    }
+
+    this.directionX = random(-5, 5);
+    this.directionY = random(-5, 5);
+
+    this.inQuarantine = false;
+  }
+
+  constructDirPos4() {
     this.positionX = random(5, canvasSize - 5);
 
     if (this.positionX >= 190 && this.positionX <= 310) {
@@ -113,7 +139,7 @@ class Individual {
       0.5;
   }
 
-  constructDirPos345() {
+  constructDirPos567() {
     this.homeBox = int(random(1, 5));
 
     switch (this.homeBox) {
@@ -136,7 +162,7 @@ class Individual {
 
     randomNum = random();
     switch (simulType) {
-      case 3:
+      case 5:
         if (randomNum <= 0.5) {
           this.traveller = true;
         } else {
@@ -144,15 +170,15 @@ class Individual {
         }
         break;
 
-      case 4:
-        if (randomNum <= 0.125) {
+      case 6:
+        if (randomNum <= 0.1) {
           this.traveller = true;
         } else {
           this.traveller = false;
         }
         break;
 
-      case 5:
+      case 7:
         this.traveller = false;
     }
 
@@ -203,32 +229,6 @@ class Individual {
     }
   }
 
-  constructDirPos6() {
-    this.positionY = random(5, canvasSize - 5);
-    if (this.positionY > 450) {
-      this.positionX = random(5, canvasSize - 55);
-    } else {
-      this.positionX = random(5, canvasSize - 5);
-    }
-
-    this.directionX = random(-5, 5);
-    this.directionY = random(-5, 5);
-
-    this.inQuarantine = false;
-  }
-
-  constructDirPos7(type) {
-    if (type == "exp") {
-      this.positionX = 250;
-      this.positionY = 250;
-    } else {
-      this.positionX = ((spawnCounter * 21) % 500) + 5;
-      this.positionY = floor(spawnCounter / 23) * 23 + 5;
-    }
-    this.directionX = random(-5, 5);
-    this.directionY = random(-5, 5);
-  }
-
   move1() {
     if (
       this.positionX - this.d / 2 <= 0 ||
@@ -246,6 +246,85 @@ class Individual {
   }
 
   move2() {
+    if (
+      this.socialDistancing(sus) ||
+      this.socialDistancing(exp) ||
+      this.socialDistancing(inf) ||
+      this.socialDistancing(rec)
+    ) {
+      //this.positionX = this.positionX - this.directionX;
+      //this.positionY = this.positionY - this.directionY;
+      this.directionX = -this.directionX;
+      this.directionY = -this.directionY;
+    }
+
+    if (
+      this.positionX - this.d / 2 <= 0 ||
+      this.positionX + this.d / 2 >= canvasSize
+    ) {
+      this.directionX = -this.directionX;
+    }
+
+    if (
+      this.positionY - this.d / 2 <= 0 ||
+      this.positionY + this.d / 2 >= canvasSize
+    ) {
+      this.directionY = -this.directionY;
+    }
+  }
+
+  socialDistancing(list) {
+    for (let i = 0; i < list.length; i++) {
+      if (
+        ((this.positionX - list[i].positionX) ** 2 +
+          (this.positionY - list[i].positionY) ** 2) **
+          0.5 <=
+          this.d &&
+        ((this.positionX - list[i].positionX) ** 2 +
+          (this.positionY - list[i].positionY) ** 2) **
+          0.5 !=
+          0
+      ) {
+        return true;
+      }
+    }
+  }
+
+  move3() {
+    if (this.isInf == true && this.inQuarantine == false) {
+      this.inQuarantine = true;
+      this.positionX = random(455, 495);
+      this.positionY = random(455, 495);
+      this.directionX = 0;
+      this.directionY = 0;
+    } else if (this.isInf == false && this.inQuarantine == true) {
+      this.inQuarantine = false;
+      this.directionX = random(-5, 5);
+      this.directionY = random(-5, 5);
+    } else if (this.inQuarantine == false) {
+      if (
+        this.positionX - this.d / 2 <= 0 ||
+        this.positionX + this.d / 2 >= canvasSize ||
+        (this.positionX + this.d / 2 >= 450 &&
+          this.positionY + this.d / 2 >= 450 &&
+          this.positionX + this.d / 2 - this.directionX < 450)
+      ) {
+        this.directionX = -this.directionX;
+      }
+
+      if (
+        this.positionY - this.d / 2 <= 0 ||
+        this.positionY + this.d / 2 >= canvasSize ||
+        (this.positionX + this.d / 2 >= 450 &&
+          this.positionY + this.d / 2 >= 450 &&
+          this.positionY + this.d / 2 - this.directionY < 450)
+      ) {
+        this.directionY = -this.directionY;
+      }
+    }
+  }
+
+  move4() {
     if (this.headingIn) {
       this.distanceToLastGoal =
         ((this.StartX - this.positionX) ** 2 +
@@ -265,7 +344,7 @@ class Individual {
     }
   }
 
-  move345() {
+  move567() {
     if (this.traveller) {
       if (this.headingOut) {
         this.distanceToLastGoal =
@@ -370,85 +449,6 @@ class Individual {
           ) {
             this.directionY = -this.directionY;
           }
-      }
-    }
-  }
-
-  move6() {
-    if (this.isInf == true && this.inQuarantine == false) {
-      this.inQuarantine = true;
-      this.positionX = random(455, 495);
-      this.positionY = random(455, 495);
-      this.directionX = 0;
-      this.directionY = 0;
-    } else if (this.isInf == false && this.inQuarantine == true) {
-      this.inQuarantine = false;
-      this.directionX = random(-5, 5);
-      this.directionY = random(-5, 5);
-    } else if (this.inQuarantine == false) {
-      if (
-        this.positionX - this.d / 2 <= 0 ||
-        this.positionX + this.d / 2 >= canvasSize ||
-        (this.positionX + this.d / 2 >= 450 &&
-          this.positionY + this.d / 2 >= 450 &&
-          this.positionX + this.d / 2 - this.directionX < 450)
-      ) {
-        this.directionX = -this.directionX;
-      }
-
-      if (
-        this.positionY - this.d / 2 <= 0 ||
-        this.positionY + this.d / 2 >= canvasSize ||
-        (this.positionX + this.d / 2 >= 450 &&
-          this.positionY + this.d / 2 >= 450 &&
-          this.positionY + this.d / 2 - this.directionY < 450)
-      ) {
-        this.directionY = -this.directionY;
-      }
-    }
-  }
-
-  move7() {
-    if (
-      this.socialDistancing(sus) ||
-      this.socialDistancing(exp) ||
-      this.socialDistancing(inf) ||
-      this.socialDistancing(rec)
-    ) {
-      //this.positionX = this.positionX - this.directionX;
-      //this.positionY = this.positionY - this.directionY;
-      this.directionX = -this.directionX;
-      this.directionY = -this.directionY;
-    }
-
-    if (
-      this.positionX - this.d / 2 <= 0 ||
-      this.positionX + this.d / 2 >= canvasSize
-    ) {
-      this.directionX = -this.directionX;
-    }
-
-    if (
-      this.positionY - this.d / 2 <= 0 ||
-      this.positionY + this.d / 2 >= canvasSize
-    ) {
-      this.directionY = -this.directionY;
-    }
-  }
-
-  socialDistancing(list) {
-    for (let i = 0; i < list.length; i++) {
-      if (
-        ((this.positionX - list[i].positionX) ** 2 +
-          (this.positionY - list[i].positionY) ** 2) **
-          0.5 <=
-          this.d &&
-        ((this.positionX - list[i].positionX) ** 2 +
-          (this.positionY - list[i].positionY) ** 2) **
-          0.5 !=
-          0
-      ) {
-        return true;
       }
     }
   }

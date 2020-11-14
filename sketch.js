@@ -1,13 +1,12 @@
 /*Simulationstyper:
 1 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas
-2 - Alle cirkler bevæger sig frem og tilbage mellem to faste punkter. Et omkring centrum i canvas og et uden for centrum
-3 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
-4 - Alle cirkler er placeret i en af fire kasser. 1/8 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
-5 - Alle cirkler er placeret i en af fire kasser. Alle bliver hjemme i deres egen kasse.
-6 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
-7 - Cirklerne holder "afstand" ved at blive frastødt hinanden
+2 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
+3 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas, men holder "afstand" ved at blive frastødt af hinanden
+4 - Alle cirkler bevæger sig frem og tilbage mellem to faste punkter. Et omkring centrum i canvas og et uden for centrum
+5 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+6 - Alle cirkler er placeret i en af fire kasser. 1/10 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
+7 - Alle cirkler er placeret i en af fire kasser. Alle bliver hjemme i deres egen kasse.
 
-Ryk rundt på rækkefølgen, så det bliver 1,7,6,2,3,4,5
 Få cirklerne til at bevæge sig langsommere
 Eksperimenter m. tider og sandsynligheder, så kurverne bliver pænere
 Organiser funktioner, så de deles ud i andre filer
@@ -75,17 +74,16 @@ let infExpTime = 300;
 let radioInput, button1, button2;
 
 function setup() {
-  console.log(random());
   createCanvas(canvasSize, canvasSize);
 
   radioInput = createRadio();
   radioInput.option(1, "Stor region");
-  radioInput.option(2, "Stor region m. mødecentrum");
-  radioInput.option(3, "4 regioner m. 1/2 rejse");
-  radioInput.option(4, "4 regioner m. 1/8 rejse");
-  radioInput.option(5, "4 regioner uden rejse");
-  radioInput.option(6, "Stor region m. karantæneafsnit");
-  radioInput.option(7, "Stor region m. social distancering");
+  radioInput.option(2, "Stor region m. social distancering");
+  radioInput.option(3, "Stor region m. karantæneafsnit");
+  radioInput.option(4, "Stor region m. mødecentrum");
+  radioInput.option(5, "4 regioner m. 1/2 rejse");
+  radioInput.option(6, "4 regioner m. 1/10 rejse");
+  radioInput.option(7, "4 regioner uden rejse");
 
   button1 = createButton("Begynd");
   button1.position(200, 250);
@@ -179,16 +177,21 @@ function moveAndDraw() {
 }
 
 function setUpSimul(type) {
-  if (type == 2) {
+  if (type == 3) {
+    strokeWeight(3);
+    line(450, 450, 499, 450);
+    line(450, 450, 450, 499);
+    line(499, 450, 499, 499);
+    line(450, 499, 499, 499);
+    strokeWeight(1);
+  } else if (type == 4) {
     strokeWeight(3);
     line(200, 200, 300, 200);
     line(300, 200, 300, 300);
     line(200, 200, 200, 300);
     line(200, 300, 300, 300);
     strokeWeight(1);
-  }
-
-  if (type == 3 || type == 4 || type == 5) {
+  } else if (type == 5 || type == 6 || type == 7) {
     strokeWeight(3);
 
     line(25, 25, 225, 25);
@@ -211,15 +214,6 @@ function setUpSimul(type) {
     line(275, 275, 275, 475);
     line(275, 475, 475, 475);
 
-    strokeWeight(1);
-  }
-
-  if (type == 6) {
-    strokeWeight(3);
-    line(450, 450, 499, 450);
-    line(450, 450, 450, 499);
-    line(499, 450, 499, 499);
-    line(450, 499, 499, 499);
     strokeWeight(1);
   }
 }
@@ -292,7 +286,7 @@ function destiny(currentInf) {
 function logData() {
   if ((frameCount - simulStart) % 10 == 0) {
     append(tCount, frameCount - simulStart);
-    if (simulType == 3 || simulType == 4 || simulType == 5) {
+    if (simulType == 5 || simulType == 6 || simulType == 7) {
       logDataByRegion(sus, susCount1, susCount2, susCount3, susCount4);
       logDataByRegion(exp, expCount1, expCount2, expCount3, expCount4);
       logDataByRegion(inf, infCount1, infCount2, infCount3, infCount4);
@@ -336,7 +330,7 @@ function logDataByRegion(dataSource, logList1, logList2, logList3, logList4) {
 
 function printAllData() {
   singleDataPrint(tCount, "t");
-  if (simulType == 3 || simulType == 4 || simulType == 5) {
+  if (simulType == 5 || simulType == 6 || simulType == 7) {
     singleDataPrint(susCount1, "sus1");
     singleDataPrint(susCount2, "sus2");
     singleDataPrint(susCount3, "sus3");
