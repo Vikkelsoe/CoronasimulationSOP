@@ -7,7 +7,6 @@
 6 - Alle cirkler er placeret i en af fire kasser. 1/10 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
 7 - Alle cirkler er placeret i en af fire kasser. Alle bliver hjemme i deres egen kasse.
 
-Få cirklerne til at bevæge sig langsommere
 Eksperimenter m. tider og sandsynligheder, så kurverne bliver pænere
 Organiser funktioner, så de deles ud i andre filer
 Ret op på de mange region-printlister. Måske kan der laves fire lister i en liste?
