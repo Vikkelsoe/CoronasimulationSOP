@@ -1,3 +1,4 @@
+//lister, der holder styr på data i simulationstyperne 1,2,3 og 4
 let tCount = [],
   susCount = [],
   expCount = [],
@@ -5,6 +6,7 @@ let tCount = [],
   recCount = [],
   deaCount = [];
 
+//lister, der holder styr på data i simulationstyperne 5,6 og 7
 let susCount1 = [],
   susCount2 = [],
   susCount3 = [],
@@ -32,6 +34,7 @@ let susCount1 = [],
 
 let dataPrint;
 
+//funktion, der køres i moveAndDraw(). Hvis frameCount er deleligt med 10, så appendes der data til listerne
 function logData() {
   if ((frameCount - simulStart) % 10 == 0) {
     append(tCount, frameCount - simulStart);
@@ -51,6 +54,7 @@ function logData() {
   }
 }
 
+//funktion, der kaldes i logData(). Den anvendes til at logge data for hver af regionerne
 function logDataByRegion(dataSource, logList1, logList2, logList3, logList4) {
   counter1 = 0;
   counter2 = 0;
@@ -77,6 +81,7 @@ function logDataByRegion(dataSource, logList1, logList2, logList3, logList4) {
   append(logList4, counter4);
 }
 
+//funktion, der kaldes, når "Print data" knappen trykkes. Styrer hvilken data, der skal printes i konsolen
 function printAllData() {
   singleDataPrint(tCount, "t");
   if (simulType == 5 || simulType == 6 || simulType == 7) {
@@ -109,6 +114,7 @@ function printAllData() {
   }
 }
 
+//funktion, der kaldes i printAllData(). Anvendes til at printe en liste med data
 function singleDataPrint(data, headline) {
   dataPrint = headline + ": ";
   for (let i = 0; i < data.length; i++) {

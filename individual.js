@@ -1,5 +1,13 @@
 class Individual {
   constructor(type) {
+    this.type = type; //sus, exp, inf, rec eller dea
+    this.d = 10;
+
+    this.expEndTime;
+    this.infEndTime;
+    this.infPass = false;
+
+    //skaber retningsvektor og position på baggrund af simulationstypen
     if (simulType == 1) {
       this.constructDirPos1();
     } else if (simulType == 2) {
@@ -11,13 +19,6 @@ class Individual {
     } else if (simulType == 5 || simulType == 6 || simulType == 7) {
       this.constructDirPos567();
     }
-
-    this.d = 10;
-    this.type = type;
-
-    this.expEndTime;
-    this.infEndTime;
-    this.infPass = false;
 
     if (this.type == "sus") {
       this.isExp = false;
@@ -51,6 +52,7 @@ class Individual {
   }
 
   move() {
+    //kører move-funktionen for den respektive simulationstype
     if (simulType == 1) {
       this.move1();
     } else if (simulType == 2) {
@@ -63,10 +65,12 @@ class Individual {
       this.move567();
     }
 
+    //opdaterer position med retningsvektoren fra den netop kaldte move-funktion
     this.positionX = this.positionX + this.directionX;
     this.positionY = this.positionY + this.directionY;
   }
 
+  //simul 1: tilfældig position og retning
   constructDirPos1() {
     this.positionX = random(5, canvasSize - 5);
     this.positionY = random(5, canvasSize - 5);
@@ -74,10 +78,11 @@ class Individual {
     this.directionY = random(-5, 5);
   }
 
+  //simul 2: positioner fordelt med afstand og tilfældig retning
   constructDirPos2(type) {
     if (type == "exp") {
-      this.positionX = 250;
-      this.positionY = 250;
+      this.positionX = random(50, 450);
+      this.positionY = random(50, 450);
     } else {
       this.positionX = ((spawnCounter * 21) % 500) + 5;
       this.positionY = floor(spawnCounter / 23) * 23 + 5;
@@ -86,6 +91,7 @@ class Individual {
     this.directionY = random(-5, 5);
   }
 
+  //tilfædlig position, dog ikke i karantæneboksen, og tilfældig retning
   constructDirPos3() {
     this.positionY = random(5, canvasSize - 5);
     if (this.positionY > 450) {
@@ -100,6 +106,7 @@ class Individual {
     this.inQuarantine = false;
   }
 
+  //position uden for centrum, og retning ind mod centrum
   constructDirPos4() {
     this.positionX = random(5, canvasSize - 5);
 
@@ -139,8 +146,13 @@ class Individual {
       0.5;
   }
 
+  //position i en af de 4 regioner. Retning tilfældigt inden for regionen, eller mod et tilfældigt punkt i en af de andre regioner
   constructDirPos567() {
-    this.homeBox = int(random(1, 5));
+    if (this.type == "exp") {
+      this.homeBox = 1;
+    } else {
+      this.homeBox = int(random(1, 5));
+    }
 
     switch (this.homeBox) {
       case 1:
@@ -229,6 +241,7 @@ class Individual {
     }
   }
 
+  //tilfældig retning
   move1() {
     if (
       this.positionX - this.d / 2 <= 0 ||
@@ -245,6 +258,7 @@ class Individual {
     }
   }
 
+  //retning, så andre individer frastødes
   move2() {
     if (
       this.socialDistancing(sus) ||
@@ -252,8 +266,6 @@ class Individual {
       this.socialDistancing(inf) ||
       this.socialDistancing(rec)
     ) {
-      //this.positionX = this.positionX - this.directionX;
-      //this.positionY = this.positionY - this.directionY;
       this.directionX = -this.directionX;
       this.directionY = -this.directionY;
     }
@@ -290,6 +302,7 @@ class Individual {
     }
   }
 
+  //tilfældig retning, med mindre man er i karantæne. I så fald er der ingen bevægelse
   move3() {
     if (this.isInf == true && this.inQuarantine == false) {
       this.inQuarantine = true;
@@ -324,6 +337,7 @@ class Individual {
     }
   }
 
+  //modsatrettet retning, hvis goal er nået. Ellers bevares retningen.
   move4() {
     if (this.headingIn) {
       this.distanceToLastGoal =
@@ -344,6 +358,7 @@ class Individual {
     }
   }
 
+  //enten tilfældig retning, ellers så retning til/fra mål i anden region
   move567() {
     if (this.traveller) {
       if (this.headingOut) {

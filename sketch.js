@@ -1,20 +1,20 @@
-/*Simulationstyper:
+/*
+Simulationstyper:
 1 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas
-2 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
-3 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas, men holder "afstand" ved at blive frastødt af hinanden
+2 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas, men holder "afstand" ved at blive frastødt af hinanden
+3 - Alle cirkler bevæger sig tilfældigt rundt på hele canvas. Alle inficerede (røde cirkler) kommer i karantæne
 4 - Alle cirkler bevæger sig frem og tilbage mellem to faste punkter. Et omkring centrum i canvas og et uden for centrum
 5 - Alle cirkler er placeret i en af fire kasser. Halvdelen af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
 6 - Alle cirkler er placeret i en af fire kasser. 1/10 af cirklerne rejser tilfældigt ud og hjem fra deres kasse, mens resten altid bliver hjemme i deres egen kasse.
 7 - Alle cirkler er placeret i en af fire kasser. Alle bliver hjemme i deres egen kasse.
-
-Eksperimenter m. tider og sandsynligheder, så kurverne bliver pænere
 */
 
-let simulType = 0;
+let simulType = 0; //styrer scenariet
 let simulStart = 0;
 
 let spawnCounter = 0; //anvendes ved spawn (patientZero-funktionen) i social distancering
 
+//listerne, som individual-objekterne opbevares i
 let sus = [],
   exp = [],
   inf = [],
@@ -25,16 +25,17 @@ let populationSize = 500;
 let canvasSize = 500;
 
 let randomNum;
-let riskRadius = 15;
-let expProb = 0.0075,
-  infProb = 0.5,
-  deaProb = 0.5;
+let riskRadius = 20; //Antagelse om smitte-radius
+let expProb = 0.0025, //Antagelse om smitteeffektiviteten
+  infProb = 0.5, //Antagelse om sandsynligheden for at udvikle symptomer
+  deaProb = 0.02; // Den hidtil kendte dødsrate
 
-let initialExpTime = 100;
-let infExpTime = 300;
+let initialExpTime = 218; // 6 tidsenheder som udsat (inkubationstid)
+let infTime = 182; // 5 tidsenheder som inficeret
 
 let radioInput, button1, button2;
 
+//opsætning af knapperne på start-skærmen
 function setup() {
   createCanvas(canvasSize, canvasSize);
 
@@ -56,6 +57,7 @@ function draw() {
   background("grey");
 
   if (simulType != 0) {
+    //hvis simulereingen er igang
     setUpSimul(simulType);
     moveAndDraw();
   } else {
@@ -65,6 +67,7 @@ function draw() {
   }
 }
 
+//følgende funktion kaldes i Setup(), når begynd knappen trykkes
 function beginSimulation() {
   if (radioInput.value()) {
     simulType = int(radioInput.value());
@@ -79,24 +82,29 @@ function beginSimulation() {
   }
 }
 
+//følgende funktion kaldes draw() og får alle individuals til at bevæge sig
 function moveAndDraw() {
+  //alle susceptibles bevæger sig, tegnes, og det undersøges, om nogen af dem bliver smittede
   for (let i = 0; i < sus.length; i++) {
     sus[i].move();
     sus[i].draw();
     infectSus(sus[i]);
   }
 
+  //alle de susceptibles, der er blevet udsatte, rykker kategori-liste
   for (let i = 0; i < sus.length; i++) {
     if (sus[i].isExp) {
       moveCategory(sus[i], sus, exp, i);
     }
   }
 
+  //alle exposed bevæger sig og tegnes
   for (let i = 0; i < exp.length; i++) {
     exp[i].move();
     exp[i].draw();
   }
 
+  //undersøger for alle exposed, om deres expEndTime er gået, og i så fald bliver de inf eller rec
   for (let i = 0; i < exp.length; i++) {
     if (exp[i].expEndTime <= frameCount && !exp[i].infPass) {
       infectExp(exp[i]);
@@ -110,11 +118,13 @@ function moveAndDraw() {
     }
   }
 
+  //alle infected bevæger sig og tegnes
   for (let i = 0; i < inf.length; i++) {
     inf[i].move();
     inf[i].draw();
   }
 
+  //undersøger for alle infected, om deres infEndTime er gået, og i så fald bliver de rec eller dea
   for (let i = 0; i < inf.length; i++) {
     if (inf[i].infEndTime <= frameCount) {
       destiny(inf[i]);
@@ -126,11 +136,13 @@ function moveAndDraw() {
     }
   }
 
+  //alle recovered bevæger sig og tegnes
   for (let i = 0; i < rec.length; i++) {
     rec[i].move();
     rec[i].draw();
   }
 
+  //alle dead bevæger tegnes
   for (let i = 0; i < dea.length; i++) {
     dea[i].draw();
   }
@@ -138,6 +150,7 @@ function moveAndDraw() {
   logData();
 }
 
+//følgende funktion kaldes i draw(). Den tegner de sorte rammer i simulationerne
 function setUpSimul(type) {
   if (type == 3) {
     strokeWeight(3);
@@ -180,14 +193,18 @@ function setUpSimul(type) {
   }
 }
 
+//følgende funktion kaldes i beginSimulation(). Den opretter hele populationen med 497 sus og 3 exp
 function patientZero() {
-  for (let i = 0; i < populationSize - 1; i++) {
+  for (let i = 0; i < populationSize - 3; i++) {
     append(sus, new Individual("sus"));
     spawnCounter += 1; //anvendes kun til spawn ved social distancering
   }
   append(exp, new Individual("exp"));
+  append(exp, new Individual("exp"));
+  append(exp, new Individual("exp"));
 }
 
+//følgende funktion kaldes i infectSus. Beregner afstanden mellem to punkter
 function distance(indi1, indi2) {
   return (
     ((indi1.positionX - indi2.positionX) ** 2 +
@@ -196,11 +213,13 @@ function distance(indi1, indi2) {
   );
 }
 
+//følgende funktion kaldes flere gange i moveAndDraw(). Den overflytter et individual fra en kategoriliste til en anden
 function moveCategory(individual, currentCat, destinationCat, index) {
   append(destinationCat, individual);
   currentCat.splice(index, 1);
 }
 
+//følgende funktion kaldes i moveAndDraw(). Undersøger for en given sus, om den er inden for en given radius af, og om den smittes af en exp eller inf
 function infectSus(currentSus) {
   for (let j = 0; j < exp.length; j++) {
     if (distance(currentSus, exp[j]) < riskRadius) {
@@ -223,18 +242,19 @@ function infectSus(currentSus) {
   }
 }
 
+//følgende funktion kaldes i moveAndDraw(). Beslutter for en given exp, om den bliver inficeret
 function infectExp(currentExp) {
   randomNum = random();
   if (randomNum <= infProb) {
     currentExp.isExp = false;
     currentExp.isInf = true;
-    currentExp.infEndTime = frameCount + infExpTime;
+    currentExp.infEndTime = frameCount + infTime;
   } else {
-    currentExp.expEndTime += infExpTime;
     currentExp.infPass = true;
   }
 }
 
+//følgende funktion kaldes i moveAndDraw(). Beslutter for en given inf, om den dør
 function destiny(currentInf) {
   randomNum = random();
   currentInf.isInf = false;
